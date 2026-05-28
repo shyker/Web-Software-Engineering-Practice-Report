@@ -2,4 +2,8 @@ node_modules
 dist
 .env
 .DS_Store
+*.md
+!README.md
+screenshots/
+课程实践报告模板.docx
 .playwright-mcp/
