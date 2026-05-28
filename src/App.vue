@@ -15,7 +15,7 @@
       </nav>
     </header>
 
-    <main class="page-body">
+    <main class="page-body" id="main-content">
       <template v-if="currentPage === 'dashboard'">
         <section class="overview-shell">
           <section class="overview-top">
@@ -121,7 +121,7 @@
               <input v-model="query.keyword" class="search-input" placeholder="姓名 / 学号 / 电话" @keyup.enter="resetPageAndFetch" />
             </div>
             <div class="score-table-shell">
-              <table class="data-table rank-table">
+              <table v-if="!isLoading && gradeRecords.length" class="data-table rank-table">
                 <thead>
                   <tr>
                     <th>学号</th><th>姓名</th><th>班级</th><th>文理科</th><th>排名</th><th>单科排名</th><th>{{ currentSubjectLabel }}</th><th>总分</th><th v-for="field in visibleScoreFields" :key="field.key">{{ field.label }}</th>
@@ -141,6 +141,16 @@
                   </tr>
                 </tbody>
               </table>
+              <div v-else-if="isLoading" class="loading-overlay">
+                <div v-for="n in 5" :key="n" class="skeleton-row">
+                  <span class="skeleton-cell" v-for="m in 8 + visibleScoreFields.length" :key="m"></span>
+                </div>
+              </div>
+              <div v-else class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg>
+                <h4>暂无成绩记录</h4>
+                <p>调整筛选条件或先录入成绩数据后再查看。</p>
+              </div>
             </div>
             <div class="pagination">
               <button @click="changePage(page - 1)" :disabled="page <= 1">上一页</button>
@@ -192,7 +202,7 @@
               </div>
 
               <div class="table-wrap">
-                <table class="data-table">
+                <table v-if="!isLoading && studentList.length" class="data-table">
                   <thead>
                     <tr><th>操作</th><th>学号</th><th>姓名</th><th>性别</th><th>班级</th><th>文理科</th><th>电话</th></tr>
                   </thead>
@@ -208,6 +218,16 @@
                     </tr>
                   </tbody>
                 </table>
+                <div v-else-if="isLoading" class="loading-overlay">
+                  <div v-for="n in 5" :key="n" class="skeleton-row">
+                    <span class="skeleton-cell" v-for="m in 7" :key="m"></span>
+                  </div>
+                </div>
+                <div v-else class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  <h4>暂无学生记录</h4>
+                  <p>当前筛选条件下没有匹配的学生信息。</p>
+                </div>
               </div>
 
               <div class="pagination">
@@ -319,7 +339,7 @@
                     </select>
                   </div>
                   <div class="score-table-shell">
-                    <table class="data-table rank-table">
+                    <table v-if="!isLoading && gradeRecords.length" class="data-table rank-table">
                       <thead><tr><th>学号</th><th>姓名</th><th>班级</th><th>文理科</th><th>排名</th><th>单科排名</th><th>{{ currentSubjectLabel }}</th><th>总分</th><th v-for="field in visibleScoreFields" :key="field.key">{{ field.label }}</th></tr></thead>
                       <tbody>
                         <tr v-for="item in gradeRecords" :key="item.score_id">
@@ -327,6 +347,16 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div v-else-if="isLoading" class="loading-overlay">
+                      <div v-for="n in 5" :key="n" class="skeleton-row">
+                        <span class="skeleton-cell" v-for="m in 8 + visibleScoreFields.length" :key="m"></span>
+                      </div>
+                    </div>
+                    <div v-else class="empty-state">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg>
+                      <h4>暂无成绩记录</h4>
+                      <p>调整筛选条件或先录入成绩数据后再查看。</p>
+                    </div>
                   </div>
                   <div class="pagination">
                     <button @click="changePage(page - 1)" :disabled="page <= 1">上一页</button>
@@ -404,7 +434,7 @@
 
               <section class="panel-card">
                 <div class="table-wrap">
-                  <table class="data-table">
+                  <table v-if="!isLoading && gradeRecords.length" class="data-table">
                     <thead><tr><th>操作</th><th>班级</th><th>文理科</th><th>学号</th><th>姓名</th><th>考试</th><th>总分</th><th>排名</th><th>语文</th><th>数学</th><th>英语</th></tr></thead>
                     <tbody>
                       <tr v-for="item in gradeRecords" :key="item.score_id">
@@ -422,6 +452,16 @@
                       </tr>
                     </tbody>
                   </table>
+                  <div v-else-if="isLoading" class="loading-overlay">
+                    <div v-for="n in 5" :key="n" class="skeleton-row">
+                      <span class="skeleton-cell" v-for="m in 11" :key="m"></span>
+                    </div>
+                  </div>
+                  <div v-else class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg>
+                    <h4>暂无成绩记录</h4>
+                    <p>调整筛选条件后重新查询。</p>
+                  </div>
                 </div>
                 <div class="pagination">
                   <button @click="changePage(page - 1)" :disabled="page <= 1">上一页</button>
@@ -473,7 +513,7 @@
 
               <section class="panel-card">
                 <div class="table-wrap">
-                  <table class="data-table">
+                  <table v-if="!isLoading && gradeRecords.length" class="data-table">
                     <thead><tr><th>班级</th><th>文理科</th><th>学号</th><th>姓名</th><th>考试</th><th>总分</th><th>排名</th><th>语文</th><th>数学</th><th>英语</th></tr></thead>
                     <tbody>
                       <tr v-for="item in gradeRecords" :key="item.score_id">
@@ -490,6 +530,16 @@
                       </tr>
                     </tbody>
                   </table>
+                  <div v-else-if="isLoading" class="loading-overlay">
+                    <div v-for="n in 5" :key="n" class="skeleton-row">
+                      <span class="skeleton-cell" v-for="m in 10" :key="m"></span>
+                    </div>
+                  </div>
+                  <div v-else class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <h4>未找到匹配记录</h4>
+                    <p>尝试调整搜索关键词或筛选条件。</p>
+                  </div>
                 </div>
                 <div class="pagination">
                   <button @click="changePage(page - 1)" :disabled="page <= 1">上一页</button>
@@ -502,6 +552,17 @@
         </section>
       </template>
     </main>
+
+    <div class="toast-stack">
+      <div v-for="toast in toasts" :key="toast.id" :class="['toast', toast.type, { leaving: toast.leaving }]">
+        <div class="toast-icon">{{ toast.type === 'success' ? '✓' : toast.type === 'error' ? '!' : 'i' }}</div>
+        <div class="toast-body">
+          <strong>{{ toast.title }}</strong>
+          <span v-if="toast.message">{{ toast.message }}</span>
+        </div>
+        <button class="toast-close" @click="removeToast(toast.id)">×</button>
+      </div>
+    </div>
 
     <div v-if="studentModalVisible" class="modal-mask" @click.self="closeStudentModal">
       <div class="student-modal">
@@ -590,6 +651,9 @@ const recordTotal = ref(0)
 const page = ref(1)
 const pageSize = ref(10)
 const message = ref('')
+const isLoading = ref(false)
+const toasts = ref([])
+let toastId = 0
 const gradeTab = ref('overview')
 const studentModalVisible = ref(false)
 const selectedStudent = ref(null)
@@ -644,43 +708,50 @@ function buildQueryParams() {
 }
 
 async function fetchData() {
-  const params = buildQueryParams()
-  const summaryParams = new URLSearchParams({
-    examId: query.examId,
-    className: query.className,
-    trackType: query.trackType,
-    subject: query.subject
-  })
-  const studentParams = new URLSearchParams({
-    page: String(page.value),
-    pageSize: String(pageSize.value),
-    className: currentPage.value === 'student-maintain' ? query.className : '',
-    trackType: currentPage.value === 'student-maintain' ? query.trackType : ''
-  })
+  isLoading.value = true
+  try {
+    const params = buildQueryParams()
+    const summaryParams = new URLSearchParams({
+      examId: query.examId,
+      className: query.className,
+      trackType: query.trackType,
+      subject: query.subject
+    })
+    const studentParams = new URLSearchParams({
+      page: String(page.value),
+      pageSize: String(pageSize.value),
+      className: currentPage.value === 'student-maintain' ? query.className : '',
+      trackType: currentPage.value === 'student-maintain' ? query.trackType : ''
+    })
 
-  const [summaryRes, examsRes, classesRes, tracksRes, studentsRes, allStudentsRes, recordsRes] = await Promise.all([
-    fetch(`${API_BASE}/dashboard/summary?${summaryParams}`).then(r => r.json()),
-    fetch(`${API_BASE}/exams`).then(r => r.json()),
-    fetch(`${API_BASE}/classes`).then(r => r.json()),
-    fetch(`${API_BASE}/tracks`).then(r => r.json()),
-    fetch(`${API_BASE}/students?${studentParams}`).then(r => r.json()),
-    fetch(`${API_BASE}/students?page=1&pageSize=500`).then(r => r.json()),
-    fetch(`${API_BASE}/score-records?${params}`).then(r => r.json())
-  ])
+    const [summaryRes, examsRes, classesRes, tracksRes, studentsRes, allStudentsRes, recordsRes] = await Promise.all([
+      fetch(`${API_BASE}/dashboard/summary?${summaryParams}`).then(r => r.json()),
+      fetch(`${API_BASE}/exams`).then(r => r.json()),
+      fetch(`${API_BASE}/classes`).then(r => r.json()),
+      fetch(`${API_BASE}/tracks`).then(r => r.json()),
+      fetch(`${API_BASE}/students?${studentParams}`).then(r => r.json()),
+      fetch(`${API_BASE}/students?page=1&pageSize=500`).then(r => r.json()),
+      fetch(`${API_BASE}/score-records?${params}`).then(r => r.json())
+    ])
 
-  dashboardSummary.value = summaryRes
-  examList.value = examsRes
-  classList.value = classesRes
-  trackList.value = tracksRes
-  studentList.value = studentsRes.items || []
-  allStudents.value = allStudentsRes.items || []
-  studentTotal.value = studentsRes.total || 0
-  gradeRecords.value = recordsRes.items || []
-  recordTotal.value = recordsRes.total || 0
-  message.value = `当前筛选已加载完成`
+    dashboardSummary.value = summaryRes
+    examList.value = examsRes
+    classList.value = classesRes
+    trackList.value = tracksRes
+    studentList.value = studentsRes.items || []
+    allStudents.value = allStudentsRes.items || []
+    studentTotal.value = studentsRes.total || 0
+    gradeRecords.value = recordsRes.items || []
+    recordTotal.value = recordsRes.total || 0
+    message.value = `当前筛选已加载完成`
 
-  if (!importForm.exam_id && examList.value.length) importForm.exam_id = examList.value[0].id
-  if (!importForm.student_id && allStudents.value.length) importForm.student_id = allStudents.value[0].id
+    if (!importForm.exam_id && examList.value.length) importForm.exam_id = examList.value[0].id
+    if (!importForm.student_id && allStudents.value.length) importForm.student_id = allStudents.value[0].id
+  } catch (e) {
+    showToast('error', '加载失败', '请检查网络连接后重试')
+  } finally {
+    isLoading.value = false
+  }
 }
 
 function changePage(next) {
@@ -718,6 +789,19 @@ function closeStudentModal() {
   studentModalVisible.value = false
 }
 
+function showToast(type, title, message = '') {
+  const id = ++toastId
+  toasts.value.push({ id, type, title, message, leaving: false })
+  setTimeout(() => {
+    const t = toasts.value.find(item => item.id === id)
+    if (t) t.leaving = true
+    setTimeout(() => removeToast(id), 240)
+  }, 3500)
+}
+function removeToast(id) {
+  toasts.value = toasts.value.filter(item => item.id !== id)
+}
+
 async function submitImport() {
   const res = await fetch(`${API_BASE}/score-records`, {
     method: 'POST',
@@ -725,7 +809,11 @@ async function submitImport() {
     body: JSON.stringify(importForm)
   })
   const data = await res.json()
-  alert(data.message || '录入成功')
+  if (res.ok) {
+    showToast('success', '录入成功', `${importForm.chinese + importForm.math + importForm.english} 分已录入`)
+  } else {
+    showToast('error', '录入失败', data.message || '请重试')
+  }
   await fetchData()
 }
 
@@ -747,7 +835,11 @@ async function boostRecord(item) {
     body: JSON.stringify(payload)
   })
   const data = await res.json()
-  alert(data.message || '修改成功')
+  if (res.ok) {
+    showToast('success', '修改成功', `${item.name} 成绩已更新`)
+  } else {
+    showToast('error', '修改失败', data.message || '请重试')
+  }
   await fetchData()
 }
 
